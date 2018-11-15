@@ -1,0 +1,19 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="My Stores"
+        android:enabled="true"
+        android:icon="@drawable/round_store_shortcut_24"
+        android:shortcutShortLabel="@string/shortcut_label"
+        android:shortcutLongLabel="@string/shortcut_label"
+        android:shortcutDisabledMessage="@string/shortcut_label">
+        <intent
+            android:action="com.example.joshr.relist.STOREFRAG"
+            android:targetPackage="com.example.joshr.relist"
+            android:targetClass="com.example.joshr.relist.MainActivity" />
+        <!-- If your shortcut is associated with multiple intents, include them
+             here. The last intent in the list determines what the user sees when
+             they launch this shortcut. -->
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <!-- Specify more shortcuts here. -->
+</shortcuts>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ReList</string>
+    <string name="title_home">Lists</string>
+    <string name="title_dashboard">Stores</string>
+    <string name="title_notifications">Defaults</string>
+    <string name="shortcut_label">My Stores</string>
+    <string name="title_activity_main2">Main2Activity</string>
+</resources>

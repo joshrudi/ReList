@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/homeFrag"
+    tools:context=".ListFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="15dp">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="3dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_gravity="top"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            app:cardBackgroundColor="@color/colorPrimaryDark"
+            app:cardCornerRadius="5dp"
+            app:cardElevation="0dp">
+
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:ems="10"
+                android:background="@null"
+                android:inputType="textPersonName"
+                android:textSize="20sp"
+                android:hint="Enter Item"
+                android:textColor="#FAFAFA"
+                android:textColorHint="@color/light_grey"
+                android:textAlignment="center" />
+
+            <ImageView
+                android:id="@+id/microphone"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:layout_marginEnd="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:tint="#FFFFFF"
+                android:src="@drawable/round_mic_24"/>
+
+        </android.support.v7.widget.CardView>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="50dp"
+        android:scrollbars="vertical">
+    </android.support.v7.widget.RecyclerView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/round_share_24"
+        app:backgroundTint="@color/colorAccent"
+        android:tint="@color/colorAccentDark"
+        />
+
+
+</FrameLayout>
