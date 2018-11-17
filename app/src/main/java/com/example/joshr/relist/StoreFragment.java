@@ -189,11 +189,22 @@ public class StoreFragment extends Fragment {
     public void onResume() {
         super.onResume();
         ((MainActivity)getActivity()).checkShortcut();
+
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
 
-                if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+                boolean isDark;
+
+                try {
+                    SharedPreferences prefs = getActivity().getSharedPreferences(
+                            "theme", Context.MODE_PRIVATE);
+                    isDark = prefs.getBoolean("theme", false);
+                } catch (Exception e) {
+                    isDark = false;
+                }
+
+                if (isDark) {
 
                     mapboxMap.setStyleUrl("mapbox://styles/joshrudi/cjohxeb2l2l8e2rpcoexccvwc");
                 } else {
@@ -202,8 +213,8 @@ public class StoreFragment extends Fragment {
                 }
             }
         });
-        mMapView.onResume();
         updateItems();
+        mMapView.onResume();
     }
 
     @Override
@@ -229,8 +240,8 @@ public class StoreFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         mMapView.onDestroy();
     }
 

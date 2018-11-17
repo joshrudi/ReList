@@ -51,13 +51,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         setContentView(R.layout.activity_main);
 
         //ActionBar actionBar = getSupportActionBar();
         //actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FAFAFA")));
         //actionBar.setTitle(Html.fromHtml("<font color='#636468'>Android Now</font>"));
 
+        boolean isDark;
+
+        SharedPreferences prefs = this.getSharedPreferences(
+                "theme", Context.MODE_PRIVATE);
+
+        try {
+            isDark = prefs.getBoolean("theme", false);
+        } catch (Exception e) {
+            isDark = false;
+        }
+
+        if (isDark) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
