@@ -1,9 +1,11 @@
 package com.example.joshr.relist;
 
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewParent;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -13,7 +15,9 @@ import android.view.LayoutInflater;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> {
+
     private List<String> mDataset;
+    private Fragment mFrag;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -30,8 +34,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public ListAdapter(List<String> myDataset) {
+    public ListAdapter(List<String> myDataset, Fragment frag) {
         mDataset = myDataset;
+        mFrag = frag;
     }
 
     // Create new views (invoked by the layout manager)
@@ -64,8 +69,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
             @Override
             public void onClick(View v) {
 
+                imageView.setClickable(false);
+                imageView.setFocusable(false);
                 mDataset.remove(holder.getAdapterPosition());
                 notifyItemRemoved(holder.getAdapterPosition());
+                checkEmpty(mFrag.getView());
             }
         });
         CheckBox checkBox = (CheckBox) holder.mFrameLayout.findViewById(R.id.checkbox);
@@ -82,5 +90,28 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
     @Override
     public int getItemCount() {
         return mDataset.size();
+    }
+
+    public void checkEmpty(View v) {
+
+        TextView listEmptyText = (TextView) v.findViewById(R.id.list_is_empty_prompt);
+        ImageView receiptImage = (ImageView) v.findViewById(R.id.receipt_background);
+        Button fillDefaultButton = (Button) v.findViewById(R.id.fill_with_default);
+
+        if (getItemCount() == 0) {
+
+            listEmptyText.setVisibility(View.VISIBLE);
+            receiptImage.setVisibility(View.VISIBLE);
+            fillDefaultButton.setVisibility(View.VISIBLE);
+            fillDefaultButton.setClickable(true);
+            fillDefaultButton.setFocusable(true);
+        } else {
+
+            listEmptyText.setVisibility(View.INVISIBLE);
+            receiptImage.setVisibility(View.INVISIBLE);
+            fillDefaultButton.setVisibility(View.INVISIBLE);
+            fillDefaultButton.setClickable(false);
+            fillDefaultButton.setFocusable(false);
+        }
     }
 }

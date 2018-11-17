@@ -78,13 +78,13 @@ public class DefaultsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_defaults, container, false);
         // Inflate the layout for this fragment
 
-        String[] currentList = getCurList();
+        String[] currentDefault = getDefault();
 
         ListView lists, stores;
 
         lists = (ListView) v.findViewById(R.id.listView_lists);
 
-        ArrayAdapter<String> listsAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, currentList);
+        ArrayAdapter<String> listsAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, currentDefault);
         lists.setAdapter(listsAdapter);
 
         ImageView infoListBnt = (ImageView) v.findViewById(R.id.info_img_default_list);
@@ -113,13 +113,17 @@ public class DefaultsFragment extends Fragment {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //blah...
+
+                                // access the 0th index of the array and set it as the default (get the raw data)
+                                setDefault(getCurList(true)[0]);
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getCurList(false));
+                                lists.setAdapter(adapter);
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //blah blah...
+                                //Ok, do nothing then
                             }
                         })
                         .setIcon(R.drawable.round_warning_24)
@@ -140,28 +144,9 @@ public class DefaultsFragment extends Fragment {
         return v;
     }
 
-    public String[] getCurList() {
-
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                "items", Context.MODE_PRIVATE);
-
-        String items = prefs.getString("items", "get");
-
-        int lastIndex = 0;
-        List<String> dataSet = new ArrayList<String>();
-
-        for (int i = 0; i < items.length(); i++) {
-
-            if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
-        }
-
-        return dataSet.toArray(new String[0]);
-    }
-
     @Override
     public void onResume() {
         super.onResume();
-        ((MainActivity)getActivity()).checkShortcut();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -201,5 +186,53 @@ public class DefaultsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private String[] getDefault() {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                "default", Context.MODE_PRIVATE);
+
+        String items = prefs.getString("default", "get");
+        int lastIndex = 0;
+        List<String> dataSet = new ArrayList<String>();
+
+        for (int i = 0; i < items.length(); i++) {
+
+            if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
+        }
+
+        return dataSet.toArray(new String[dataSet.size()]);
+    }
+
+    private void setDefault(String newDefault) {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                "default", Context.MODE_PRIVATE);
+
+        prefs.edit().putString("default", newDefault).apply();
+    }
+
+    public String[] getCurList(boolean isRaw) {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                "items", Context.MODE_PRIVATE);
+
+        String items = prefs.getString("items", "get");
+
+        if (!isRaw) {
+
+            int lastIndex = 0;
+            List<String> dataSet = new ArrayList<String>();
+
+            for (int i = 0; i < items.length(); i++) {
+
+                if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
+            }
+
+            return dataSet.toArray(new String[0]);
+        }
+
+        return new String[] {items};
     }
 }

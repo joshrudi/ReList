@@ -15,12 +15,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.support.design.widget.FloatingActionButton;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -102,7 +106,7 @@ public class ListFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new ListAdapter(dataSet);
+        mAdapter = new ListAdapter(dataSet, this);
         mRecyclerView.setAdapter(mAdapter);
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new
@@ -124,6 +128,7 @@ public class ListFragment extends Fragment {
 
                             dataSet.remove(viewHolder.getAdapterPosition());
                             mAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                            checkEmpty();
                         }
                     }
 
@@ -165,6 +170,7 @@ public class ListFragment extends Fragment {
                         dataSet.add(editText.getText().toString());
                         mAdapter.notifyItemInserted(dataSet.size() - 1);
                         editText.getText().clear();
+                        checkEmpty();
                     }
                     return true;
                 }
@@ -199,6 +205,17 @@ public class ListFragment extends Fragment {
                 sendIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
                 sendIntent.setType("text/plain");
                 startActivity(Intent.createChooser(sendIntent, "Share Through:"));
+            }
+        });
+
+        Button setDefault = (Button) view.findViewById(R.id.fill_with_default);
+        setDefault.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dataSet.addAll(Arrays.asList(getDefault()));
+                mAdapter.notifyItemInserted(dataSet.size() - 1);
+                checkEmpty();
             }
         });
 
@@ -256,7 +273,6 @@ public class ListFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();
-        ((MainActivity)getActivity()).checkShortcut();
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 "items", Context.MODE_PRIVATE);
@@ -269,6 +285,8 @@ public class ListFragment extends Fragment {
 
             if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
         }
+
+        checkEmpty();  //check to see if we display "default" button
     }
 
     @Override
@@ -304,5 +322,47 @@ public class ListFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void checkEmpty() {
+
+        View v = getView();
+
+        TextView listEmptyText = (TextView) v.findViewById(R.id.list_is_empty_prompt);
+        ImageView receiptImage = (ImageView) v.findViewById(R.id.receipt_background);
+        Button fillDefaultButton = (Button) v.findViewById(R.id.fill_with_default);
+
+        if (mAdapter.getItemCount() == 0) {
+
+            listEmptyText.setVisibility(View.VISIBLE);
+            receiptImage.setVisibility(View.VISIBLE);
+            fillDefaultButton.setVisibility(View.VISIBLE);
+            fillDefaultButton.setClickable(true);
+            fillDefaultButton.setFocusable(true);
+        } else {
+
+            listEmptyText.setVisibility(View.INVISIBLE);
+            receiptImage.setVisibility(View.INVISIBLE);
+            fillDefaultButton.setVisibility(View.INVISIBLE);
+            fillDefaultButton.setClickable(false);
+            fillDefaultButton.setFocusable(false);
+        }
+    }
+
+    private String[] getDefault() {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                "default", Context.MODE_PRIVATE);
+
+        String items = prefs.getString("default", "get");
+        int lastIndex = 0;
+        List<String> dataSet = new ArrayList<String>();
+
+        for (int i = 0; i < items.length(); i++) {
+
+            if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
+        }
+
+        return dataSet.toArray(new String[dataSet.size()]);
     }
 }

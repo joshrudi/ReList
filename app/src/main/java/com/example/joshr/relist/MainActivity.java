@@ -107,6 +107,12 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
     }
 
+    @Override
+    public void onBackPressed() {
+
+        finish();
+    }
+
     public void checkShortcut() {
 
         if ("com.example.joshr.relist.STOREFRAG".equals(getIntent().getAction())) {
