@@ -1,6 +1,6 @@
 # ReList
 
-Android Shopping List App.
+Android Shopping List App. (Work in progress)
 
 # Features:
 * Create shopping list, remove via swipe or tap 'X'
