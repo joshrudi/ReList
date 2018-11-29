@@ -118,6 +118,8 @@ public class MainActivity extends AppCompatActivity
         if ("com.example.joshr.relist.STOREFRAG".equals(getIntent().getAction())) {
             mFragment = new StoreFragment();
             updateFragment(mFragment);
+            BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+            navigation.setSelectedItemId(R.id.navigation_dashboard);
             getIntent().setAction("");
         }
     }
