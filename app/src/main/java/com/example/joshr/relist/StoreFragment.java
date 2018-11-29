@@ -28,6 +28,7 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -131,13 +132,18 @@ public class StoreFragment extends Fragment {
                 List<Address> list = new ArrayList<>();
                 if(gc.isPresent()){
                     try {
-                        list = gc.getFromLocationName(address, 1);
-                    }
-                    catch (Exception e) {}
 
-                    Address address = list.get(0);
-                    lat = address.getLatitude();
-                    lng = address.getLongitude();
+                        list = gc.getFromLocationName(address, 1);
+                        Address address = list.get(0);
+                        lat = address.getLatitude();
+                        lng = address.getLongitude();
+                    }
+                    catch (Exception e) {
+
+                        //new york
+                        lat = 40.7128;
+                        lng = -74.0060;
+                    }
                 }
 
                 mapboxMap.removeAnnotations();
@@ -220,10 +226,6 @@ public class StoreFragment extends Fragment {
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                "stores", Context.MODE_PRIVATE);
-        prefs.edit().putString("stores", "Tampa, FL\nNew York, New York\nCopenhagen Denmark\n").apply();
     }
 
     @Override

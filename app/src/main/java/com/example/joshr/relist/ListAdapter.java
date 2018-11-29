@@ -76,14 +76,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
                 checkEmpty(mFrag.getView());
             }
         });
-        CheckBox checkBox = (CheckBox) holder.mFrameLayout.findViewById(R.id.checkbox);
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //do nothing as of yet
-            }
-        });
     }
 
     // Return the size of your dataset (invoked by the layout manager)

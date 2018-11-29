@@ -226,7 +226,7 @@ public class ListFragment extends Fragment {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Please Say Item Name");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Please Say Item Name\nSeparate individual items with an 'and' in between names");
         try {
             startActivityForResult(intent, 100);
         } catch (ActivityNotFoundException a) {
@@ -241,10 +241,24 @@ public class ListFragment extends Fragment {
         switch (requestCode) {
             case 100: {
                 if (resultCode == RESULT_OK && null != data) {
+                    //EditText editText = (EditText) getActivity().findViewById(R.id.editText);
+                    //editText.getText().clear();
+                    //editText.setText(result.get(0));
+
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    EditText editText = (EditText) getActivity().findViewById(R.id.editText);
-                    editText.getText().clear();
-                    editText.setText(result.get(0));
+                    String items = result.get(0);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < items.length(); i++) {
+
+                        if (items.length() >= i+4 && items.substring(i, i+4).equals(" and")) {
+
+                            dataSet.add(items.substring(0, i));
+                            items = items.substring(i+4, items.length());
+                        }
+                    }
+
+                    if (items.length() > 0) dataSet.add(items);  //if there was something after the last "and", add it
+                    mAdapter.notifyItemInserted(dataSet.size() - 1);
                 }
                 break;
             }
@@ -271,7 +285,7 @@ public class ListFragment extends Fragment {
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
@@ -290,7 +304,7 @@ public class ListFragment extends Fragment {
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
 
         SharedPreferences prefs = getActivity().getSharedPreferences(

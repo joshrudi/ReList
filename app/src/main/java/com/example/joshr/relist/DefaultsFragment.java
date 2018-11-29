@@ -7,12 +7,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -79,16 +83,53 @@ public class DefaultsFragment extends Fragment {
         // Inflate the layout for this fragment
 
         String[] currentDefault = getDefault();
+        String[] defaultStoreList = getStores();
 
         ListView lists, stores;
 
         lists = (ListView) v.findViewById(R.id.listView_lists);
+        stores = (ListView) v.findViewById(R.id.listView_stores);
 
         ArrayAdapter<String> listsAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, currentDefault);
-        lists.setAdapter(listsAdapter);
+        ArrayAdapter<String> storesAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, defaultStoreList);
 
-        ImageView infoListBnt = (ImageView) v.findViewById(R.id.info_img_default_list);
-        infoListBnt.setOnClickListener(new View.OnClickListener() {
+        lists.setAdapter(listsAdapter);
+        stores.setAdapter(storesAdapter);
+
+        stores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+
+                AlertDialog.Builder builder;
+                builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
+                builder.setTitle("Remove Location?")
+                        .setMessage("By Selecting 'Yes', you will delete '" + getStores()[arg2] + "' from your list of stores.")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                saveStores(defaultStoreList, arg2);
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getStores());
+                                stores.setAdapter(adapter);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Ok, do nothing then
+                            }
+                        })
+                        .setIcon(R.drawable.round_warning_24)
+                        .show();
+            }
+
+        });
+
+
+
+        ImageView infoListBtn = (ImageView) v.findViewById(R.id.info_img_default_list);
+        infoListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -96,6 +137,20 @@ public class DefaultsFragment extends Fragment {
                 builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
                 builder.setTitle("Default List")
                         .setMessage("The default list is a customizable list which contains your most commonly purchased items.  When your list is empty on the 'Lists' tab, a button allowing you to automatically propagate all of the items in the default list will appear.  Replacing the Current default list will overwrite it's contents with what you have currently added on the 'Lists' page.")
+                        .setIcon(R.drawable.round_help_24)
+                        .show();
+            }
+        });
+
+        ImageView infoStoreBtn = (ImageView) v.findViewById(R.id.info_img_default_stores);
+        infoStoreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder builder;
+                builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
+                builder.setTitle("Default Stores")
+                        .setMessage("The Default Stores list is a customizable list which contains your favorite stores!  You can add a location (please be specific with the address) by selecting the 'Add' button, and remove a location by selecting the location from the list.")
                         .setIcon(R.drawable.round_help_24)
                         .show();
             }
@@ -131,7 +186,47 @@ public class DefaultsFragment extends Fragment {
             }
         });
 
-        ImageView settingsCog = (ImageView) v.findViewById(R.id.settings_cog);
+        TextView addStore = (TextView) v.findViewById(R.id.add_store);
+        addStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final EditText input = new EditText(getActivity());
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT);
+                input.setLayoutParams(layoutParams);
+
+                AlertDialog.Builder builder;
+                builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
+                builder.setTitle("Enter Address")
+                        .setMessage("Please Enter the full address of the store you would like to add to your default stores list.")
+                        .setView(input)
+                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                String[] curStores = getStores();
+                                String[] updatedStores = new String[curStores.length+1];
+                                for (int i = 0; i < curStores.length; i++) updatedStores[i] = curStores[i];
+                                updatedStores[curStores.length] = input.getText().toString();
+                                saveStores(updatedStores, -1);  // -1 so we don't remove any value
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getStores());
+                                stores.setAdapter(adapter);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //Ok, do nothing then
+                            }
+                        })
+                        .setIcon(R.drawable.round_add_location_24)
+                        .show();
+            }
+        });
+
+        FloatingActionButton settingsCog = (FloatingActionButton) v.findViewById(R.id.fab_settings);
         settingsCog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -234,5 +329,41 @@ public class DefaultsFragment extends Fragment {
         }
 
         return new String[] {items};
+    }
+
+    private String[] getStores() {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                "stores", Context.MODE_PRIVATE);
+
+        String items = prefs.getString("stores", "New York, New York\n ");
+        int lastIndex = 0;
+        List<String> dataSet = new ArrayList<String>();
+
+        for (int i = 0; i < items.length(); i++) {
+
+            if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
+        }
+
+        return dataSet.toArray(new String[dataSet.size()]);
+    }
+
+    private void saveStores(String[] stores, int valToRemove) {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                "stores", Context.MODE_PRIVATE);
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < stores.length; i++) {
+
+            if (i != valToRemove) {
+
+                sb.append(stores[i]);
+                sb.append("\n");
+            }
+        }
+
+        prefs.edit().putString("stores", sb.toString()).apply();
     }
 }
