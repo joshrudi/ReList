@@ -7,3 +7,5 @@ Android Shopping List App. (Work in progress)
 * Get directions to your favorite stores through built in map (MapBox API)
 * Light/Dark Theme!
 * Create Default List to save time typing!
+* Share list with friends and family
+* Voice control
