@@ -9,3 +9,11 @@ Android Shopping List App. (Work in progress)
 * Create Default List to save time typing!
 * Share list with friends and family
 * Voice control
+
+# Screenshots
+
+![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist1.png)
+![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist2.png)
+![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist3.png)
+![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist4.png)
+![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist5.png)
