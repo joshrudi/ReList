@@ -12,8 +12,8 @@ Android Shopping List App. (Work in progress)
 
 # Screenshots
 
-![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist1.png)
-![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist2.png)
-![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist3.png)
-![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist4.png)
-![alt text](https://github.com/joshrudi/ReList/blob/master/screenshots/relist5.png)
+<img src="https://github.com/joshrudi/ReList/blob/master/screenshots/relist1.png" width="299" height="620">
+<img src="https://github.com/joshrudi/ReList/blob/master/screenshots/relist2.png" width="299" height="620">
+<img src="https://github.com/joshrudi/ReList/blob/master/screenshots/relist3.png" width="299" height="620">
+<img src="https://github.com/joshrudi/ReList/blob/master/screenshots/relist4.png" width="299" height="620">
+<img src="https://github.com/joshrudi/ReList/blob/master/screenshots/relist5.png" width="299" height="620">
