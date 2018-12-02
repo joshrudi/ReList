@@ -234,6 +234,35 @@ public class ListFragment extends Fragment {
         }
     }
 
+    private void saveListState() {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                "items", Context.MODE_PRIVATE);
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < dataSet.size(); i++) {
+            sb.append(dataSet.get(i)).append("\n");
+        }
+        prefs.edit().putString("items", sb.toString()).apply();
+    }
+
+    private void loadListState() {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                "items", Context.MODE_PRIVATE);
+
+        String items = prefs.getString("items", "get");
+        int lastIndex = 0;
+        dataSet.clear();
+
+        for (int i = 0; i < items.length(); i++) {
+
+            if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
+        }
+
+        checkEmpty();  //check to see if we display "default" button
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -247,22 +276,22 @@ public class ListFragment extends Fragment {
 
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String items = result.get(0);
-                    StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < items.length(); i++) {
 
-                        if (items.length() >= i+4 && items.substring(i, i+4).equals(" and")) {
+                        if (items.length() >= i+5 && items.substring(i, i+5).equals(" and ")) {
 
                             dataSet.add(items.substring(0, i));
-                            items = items.substring(i+4, items.length());
+                            items = items.substring(i+5, items.length());
+                            i = 0;
                         }
                     }
 
-                    if (items.length() > 0) dataSet.add(items);  //if there was something after the last "and", add it
+                    if (items.length() > 0) dataSet.add(items);  // if there was something after the last "and", add it
                     mAdapter.notifyItemInserted(dataSet.size() - 1);
+                    saveListState();
                 }
                 break;
             }
-
         }
     }
 
@@ -288,33 +317,14 @@ public class ListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                "items", Context.MODE_PRIVATE);
-
-        String items = prefs.getString("items", "get");
-        int lastIndex = 0;
-        dataSet.clear();
-
-        for (int i = 0; i < items.length(); i++) {
-
-            if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
-        }
-
-        checkEmpty();  //check to see if we display "default" button
+        loadListState();
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        SharedPreferences prefs = getActivity().getSharedPreferences(
-                "items", Context.MODE_PRIVATE);
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < dataSet.size(); i++) {
-            sb.append(dataSet.get(i)).append("\n");
-        }
-        prefs.edit().putString("items", sb.toString()).apply();
+        saveListState();
     }
 
     @Override
