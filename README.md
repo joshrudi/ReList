@@ -1,5 +1,4 @@
-# ReList
-
+# ReList <img src="https://github.com/joshrudi/ReList/blob/master/screenshots/ic_launcher.png" width="100" height="100"> 
 Android Shopping List App. (Work in progress)
 
 # Features:
@@ -12,7 +11,6 @@ Android Shopping List App. (Work in progress)
 
 # Screenshots
 
-<img src="https://github.com/joshrudi/ReList/blob/master/screenshots/ic_launcher.png" width="200" height="200">
 <img src="https://github.com/joshrudi/ReList/blob/master/screenshots/relist5.png" width="299" height="620">
 <img src="https://github.com/joshrudi/ReList/blob/master/screenshots/relist2.png" width="299" height="620">
 <img src="https://github.com/joshrudi/ReList/blob/master/screenshots/relist3.png" width="299" height="620">
