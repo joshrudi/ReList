@@ -109,8 +109,9 @@ public class DefaultsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                saveStores(defaultStoreList, arg2);
-                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getStores());
+                                saveStores(getStores(), arg2);
+                                String[] updatedLoc = getStores();
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, updatedLoc);
                                 stores.setAdapter(adapter);
                             }
                         })
