@@ -1,6 +1,8 @@
 # ReList <img src="https://github.com/joshrudi/ReList/blob/master/screenshots/ic_launcher.png" width="100" height="100"> 
 Android Shopping List App. (Work in progress)
 
+Google Play: https://play.google.com/store/apps/details?id=com.rudi.soft.relist&hl=en
+
 # Features:
 * Create shopping list, remove via swipe or tap 'X'
 * Get directions to your favorite stores through built in map (MapBox API)
