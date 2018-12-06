@@ -1,4 +1,4 @@
-package com.example.joshr.relist;
+package com.rudi.soft.relist;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,45 +18,53 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        Boolean isDark;
+        Boolean isDark;  // theme bool state
 
         SharedPreferences prefs = this.getSharedPreferences(
                 "theme", Context.MODE_PRIVATE);
 
         try {
-            isDark = prefs.getBoolean("theme", false);
+            isDark = prefs.getBoolean("theme", false);  // load theme state
         } catch (Exception e) {
-            isDark = false;
+            isDark = false;  // assert false otherwise
         }
 
+        // switch in settings for theme
         Switch themeMode = (Switch) findViewById(R.id.night_mode);
+
+        // set toggle to current theme
         themeMode.setChecked(isDark);
         themeMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked) {
+                if (isChecked) {  // if we check it
 
+                    // enable dark mode
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                     prefs.edit().putBoolean("theme", true).apply();
-                    recreate();
+                    recreate();  // recreate so changes take effect
                 } else {
 
+                    // diable dark mode
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     prefs.edit().putBoolean("theme", false).apply();
-                    recreate();
+                    recreate();  // changes take effect
                 }
             }
         });
 
+        // back button to go back to defaults page
         ImageView backBtn = (ImageView) findViewById(R.id.back_settings);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // simply finishing this activity won't work because we need to reset the main activity for
+                // theme changes to take effect, therefore we set a flag and pass it into a new main activity
                 String flag = "defaults";
                 startActivity(new Intent(getBaseContext(), MainActivity.class).putExtra("frag", flag));
-                finish();
+                finish();  // close it out now
             }
         });
     }
@@ -65,8 +73,9 @@ public class Settings extends AppCompatActivity {
     public void onBackPressed() {
         //super.onBackPressed();
 
+        // same concept as above "onClick(...)"
         String flag = "defaults";
         startActivity(new Intent(getBaseContext(), MainActivity.class).putExtra("frag", flag));
-        finish();
+        finish();  // close
     }
 }

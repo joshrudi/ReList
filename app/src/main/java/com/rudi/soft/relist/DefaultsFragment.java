@@ -1,4 +1,4 @@
-package com.example.joshr.relist;
+package com.rudi.soft.relist;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -82,9 +82,10 @@ public class DefaultsFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_defaults, container, false);
         // Inflate the layout for this fragment
 
-        String[] currentDefault = getDefault();
-        String[] defaultStoreList = getStores();
+        String[] currentDefault = getDefault();  //loads the current default shopping list saved
+        String[] defaultStoreList = getStores();  //loads the current list of added stores
 
+        /* vvv Creates two lists, one for the default shopping list and one for the saved stores */
         ListView lists, stores;
 
         lists = (ListView) v.findViewById(R.id.listView_lists);
@@ -95,12 +96,15 @@ public class DefaultsFragment extends Fragment {
 
         lists.setAdapter(listsAdapter);
         stores.setAdapter(storesAdapter);
+        /* ^^^ Creates two lists, one for the default shopping list and one for the saved stores */
 
+        //if a store in the list is clicked, see if the user wants to delete THAT specific store
         stores.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 
+                // alert dialog prompting user
                 AlertDialog.Builder builder;
                 builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
                 builder.setTitle("Remove Location?")
@@ -109,8 +113,12 @@ public class DefaultsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                saveStores(getStores(), arg2);
-                                String[] updatedLoc = getStores();
+                                // if user selected 'yes' then delete store
+
+                                saveStores(getStores(), arg2);  // overwrite currently store list (delete index 'arg2')
+                                String[] updatedLoc = getStores();  // load new stores
+
+                                // update adapter with new stores list
                                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, updatedLoc);
                                 stores.setAdapter(adapter);
                             }
@@ -118,6 +126,7 @@ public class DefaultsFragment extends Fragment {
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
                                 //Ok, do nothing then
                             }
                         })
@@ -128,12 +137,14 @@ public class DefaultsFragment extends Fragment {
         });
 
 
-
+        // infoListBtn is a question-mark-button on the bottom cardview
+        // if selected, explain how replacing list works to user
         ImageView infoListBtn = (ImageView) v.findViewById(R.id.info_img_default_list);
         infoListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // create alert dialog and explain to user how default list works
                 AlertDialog.Builder builder;
                 builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
                 builder.setTitle("Default List")
@@ -143,11 +154,14 @@ public class DefaultsFragment extends Fragment {
             }
         });
 
+        // infoStoreBtn is a question-mark-button on the top cardview
+        // if selected, explain how the store list works
         ImageView infoStoreBtn = (ImageView) v.findViewById(R.id.info_img_default_stores);
         infoStoreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // create alert dialog and explain to user how the store list works
                 AlertDialog.Builder builder;
                 builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
                 builder.setTitle("Default Stores")
@@ -157,11 +171,13 @@ public class DefaultsFragment extends Fragment {
             }
         });
 
+        // button which triggers the user prompt to update/overwrite the current default shopping list
         TextView replaceList = (TextView) v.findViewById(R.id.replaceText);
         replaceList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // if user selects 'yes' then overwrite the default shopping list
                 AlertDialog.Builder builder;
                 builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
                 builder.setTitle("Replace Default?")
@@ -170,8 +186,10 @@ public class DefaultsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                // access the 0th index of the array and set it as the default (get the raw data)
+                                // access the 0th index of the array (getCurList) and set it as the default with 'setDefault()' (get the raw data and set it)
                                 setDefault(getCurList(true)[0]);
+
+                                // update the default list with the new default list
                                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getCurList(false));
                                 lists.setAdapter(adapter);
                             }
@@ -179,6 +197,7 @@ public class DefaultsFragment extends Fragment {
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
                                 //Ok, do nothing then
                             }
                         })
@@ -187,17 +206,20 @@ public class DefaultsFragment extends Fragment {
             }
         });
 
+        // button which triggers the user prompt to add to the store list
         TextView addStore = (TextView) v.findViewById(R.id.add_store);
         addStore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // create an editText to put in the dialog (also set up layout for the editText)
                 final EditText input = new EditText(getActivity());
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
                 input.setLayoutParams(layoutParams);
 
+                // user enters address and if 'Add' is selected, add the text to the shopping list
                 AlertDialog.Builder builder;
                 builder = new AlertDialog.Builder(getActivity(), android.R.style.Theme_Material_Dialog_Alert);
                 builder.setTitle("Enter Address")
@@ -207,11 +229,16 @@ public class DefaultsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                String[] curStores = getStores();
-                                String[] updatedStores = new String[curStores.length+1];
-                                for (int i = 0; i < curStores.length; i++) updatedStores[i] = curStores[i];
+                                String[] curStores = getStores();  // get the current list of stores
+                                String[] updatedStores = new String[curStores.length+1];  // create new array with space for one more store
+                                for (int i = 0; i < curStores.length; i++) updatedStores[i] = curStores[i];  // copy old list into new list
+
+                                // grab the user input string from editText and put it in the last index of the new arra
                                 updatedStores[curStores.length] = input.getText().toString();
+
                                 saveStores(updatedStores, -1);  // -1 so we don't remove any value
+
+                                // update the stores
                                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, getStores());
                                 stores.setAdapter(adapter);
                             }
@@ -219,6 +246,7 @@ public class DefaultsFragment extends Fragment {
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+
                                 //Ok, do nothing then
                             }
                         })
@@ -227,12 +255,19 @@ public class DefaultsFragment extends Fragment {
             }
         });
 
+        // settings cog FAB; if selected opens settings activity
         FloatingActionButton settingsCog = (FloatingActionButton) v.findViewById(R.id.fab_settings);
         settingsCog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // open settings
                 startActivity(new Intent(getActivity(), Settings.class));
+
+                /*
+                    finish current activity because when dark theme is toggled,
+                    will need to effectively perform a recreate() on the main activity to update colors
+                */
                 getActivity().finish();
             }
         });
@@ -242,11 +277,13 @@ public class DefaultsFragment extends Fragment {
 
     @Override
     public void onResume() {
+
         super.onResume();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
+
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
@@ -255,6 +292,7 @@ public class DefaultsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -265,6 +303,7 @@ public class DefaultsFragment extends Fragment {
 
     @Override
     public void onDetach() {
+
         super.onDetach();
         mListener = null;
     }
@@ -280,28 +319,34 @@ public class DefaultsFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
+
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
-    private String[] getDefault() {
+    private String[] getDefault() {  // gets the current default shopping list
 
+        // access saved default from prefs
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 "default", Context.MODE_PRIVATE);
 
         String items = prefs.getString("default", "get");
+
+        // keep track of last index
         int lastIndex = 0;
-        List<String> dataSet = new ArrayList<String>();
+
+        List<String> dataSet = new ArrayList<String>();  // stores \n separated values
 
         for (int i = 0; i < items.length(); i++) {
 
+            // if we find a '\n' marker, add the item inbetween lastIndex and the current location, then update lastIndex
             if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
         }
 
-        return dataSet.toArray(new String[dataSet.size()]);
+        return dataSet.toArray(new String[dataSet.size()]);  // convert to string array and return
     }
 
-    private void setDefault(String newDefault) {
+    private void setDefault(String newDefault) {  // takes in raw \n separated string and stores it as default
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 "default", Context.MODE_PRIVATE);
@@ -309,6 +354,7 @@ public class DefaultsFragment extends Fragment {
         prefs.edit().putString("default", newDefault).apply();
     }
 
+    // return the current shopping list as String[]; if isRaw is true, return raw \n separated string in 0th index
     public String[] getCurList(boolean isRaw) {
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
@@ -316,23 +362,23 @@ public class DefaultsFragment extends Fragment {
 
         String items = prefs.getString("items", "get");
 
-        if (!isRaw) {
+        if (!isRaw) {  // if isRaw is false, parse the string and return String[] for each separated item
 
             int lastIndex = 0;
             List<String> dataSet = new ArrayList<String>();
 
-            for (int i = 0; i < items.length(); i++) {
+            for (int i = 0; i < items.length(); i++) {  // parse data
 
                 if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
             }
 
-            return dataSet.toArray(new String[0]);
+            return dataSet.toArray(new String[0]);  // convert to string array and return
         }
 
-        return new String[] {items};
+        return new String[] {items};  // if isRaw is true, return raw \n separated string in 0th index
     }
 
-    private String[] getStores() {
+    private String[] getStores() {  // loads current saved stores list
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 "stores", Context.MODE_PRIVATE);
@@ -341,15 +387,15 @@ public class DefaultsFragment extends Fragment {
         int lastIndex = 0;
         List<String> dataSet = new ArrayList<String>();
 
-        for (int i = 0; i < items.length(); i++) {
+        for (int i = 0; i < items.length(); i++) {  // parse data
 
             if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
         }
 
-        return dataSet.toArray(new String[dataSet.size()]);
+        return dataSet.toArray(new String[dataSet.size()]);  // convert to string array and return
     }
 
-    private void saveStores(String[] stores, int valToRemove) {
+    private void saveStores(String[] stores, int valToRemove) {  // saves String[] input as new stores list
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 "stores", Context.MODE_PRIVATE);
@@ -358,13 +404,13 @@ public class DefaultsFragment extends Fragment {
 
         for (int i = 0; i < stores.length; i++) {
 
-            if (i != valToRemove) {
+            if (i != valToRemove) {  // if index is valid, remove value at index in saved list
 
                 sb.append(stores[i]);
                 sb.append("\n");
             }
         }
 
-        prefs.edit().putString("stores", sb.toString()).apply();
+        prefs.edit().putString("stores", sb.toString()).apply(); // save
     }
 }

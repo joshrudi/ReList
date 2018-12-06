@@ -1,4 +1,4 @@
-package com.example.joshr.relist;
+package com.rudi.soft.relist;
 
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -33,10 +33,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    // loads dataset and saves fragment reference
     public ListAdapter(List<String> myDataset, Fragment frag) {
         mDataset = myDataset;
-        mFrag = frag;
+        mFrag = frag;  // used as a reference to the fragment
     }
 
     // Create new views (invoked by the layout manager)
@@ -44,8 +44,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
     public ListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                      int viewType) {
         // create a new view
-//        TextView v = (TextView) LayoutInflater.from(parent.getContext())
-//                .inflate(R.layout.list_text, parent, false);
         FrameLayout v = (FrameLayout) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_text, parent, false);
 
@@ -59,20 +57,26 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        //holder.mFrameLayout.setText(mDataset[position]);
-
+        // sets item text
         TextView textView = (TextView) holder.mFrameLayout.findViewById(R.id.item_name);
         textView.setText(mDataset.get(position));
+
+        // 'x' image
         ImageView imageView = (ImageView) holder.mFrameLayout.findViewById(R.id.remove_item);
         imageView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
 
+                // disables 'x' to prevent overlapping calls
                 imageView.setClickable(false);
                 imageView.setFocusable(false);
+
+                // remove item from position
                 mDataset.remove(holder.getAdapterPosition());
                 notifyItemRemoved(holder.getAdapterPosition());
+
+                // check if shopping list is empty using reference to fragment
                 checkEmpty(mFrag.getView());
             }
         });
@@ -84,14 +88,21 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
         return mDataset.size();
     }
 
+    // checks if shopping list is empty, if so then enable default button and images/text prompt
     public void checkEmpty(View v) {
 
+        // tell user list is empty
         TextView listEmptyText = (TextView) v.findViewById(R.id.list_is_empty_prompt);
+
+        // visual aid
         ImageView receiptImage = (ImageView) v.findViewById(R.id.receipt_background);
+
+        // button to trigger adding default list
         Button fillDefaultButton = (Button) v.findViewById(R.id.fill_with_default);
 
-        if (getItemCount() == 0) {
+        if (getItemCount() == 0) {  // if list is empty
 
+            // enable default button/visual aid
             listEmptyText.setVisibility(View.VISIBLE);
             receiptImage.setVisibility(View.VISIBLE);
             fillDefaultButton.setVisibility(View.VISIBLE);
@@ -99,6 +110,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
             fillDefaultButton.setFocusable(true);
         } else {
 
+            // otherwise don't enable default option
             listEmptyText.setVisibility(View.INVISIBLE);
             receiptImage.setVisibility(View.INVISIBLE);
             fillDefaultButton.setVisibility(View.INVISIBLE);

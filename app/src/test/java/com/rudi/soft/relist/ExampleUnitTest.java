@@ -1,4 +1,4 @@
-package com.example.joshr.relist;
+package com.rudi.soft.relist;
 
 import org.junit.Test;
 

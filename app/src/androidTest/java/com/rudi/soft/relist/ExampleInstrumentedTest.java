@@ -1,4 +1,4 @@
-package com.example.joshr.relist;
+package com.rudi.soft.relist;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

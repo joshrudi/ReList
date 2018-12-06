@@ -7,13 +7,11 @@
         android:shortcutLongLabel="@string/shortcut_label"
         android:shortcutDisabledMessage="@string/shortcut_label">
         <intent
-            android:action="com.example.joshr.relist.STOREFRAG"
-            android:targetPackage="com.example.joshr.relist"
-            android:targetClass="com.example.joshr.relist.MainActivity" />
-        <!-- If your shortcut is associated with multiple intents, include them
-             here. The last intent in the list determines what the user sees when
-             they launch this shortcut. -->
+            android:action="com.rudi.soft.relist.STOREFRAG"
+            android:targetPackage="com.rudi.soft.relist"
+            android:targetClass="com.rudi.soft.relist.MainActivity" />
+
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
-    <!-- Specify more shortcuts here. -->
+
 </shortcuts>

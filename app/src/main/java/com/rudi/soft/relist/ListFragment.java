@@ -1,4 +1,4 @@
-package com.example.joshr.relist;
+package com.rudi.soft.relist;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -49,6 +49,7 @@ public class ListFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    // dataset containing items
     private final List<String> dataSet = new ArrayList<String>();
 
     private RecyclerView mRecyclerView;
@@ -58,6 +59,7 @@ public class ListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public ListFragment() {
+
         // Required empty public constructor
     }
 
@@ -71,6 +73,7 @@ public class ListFragment extends Fragment {
      */
     // TODO: Rename and change types and number of parameters
     public static ListFragment newInstance(String param1, String param2) {
+
         ListFragment fragment = new ListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
@@ -105,10 +108,11 @@ public class ListFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        // specify an adapter (see also next example)
-        mAdapter = new ListAdapter(dataSet, this);
+        // specify an adapter
+        mAdapter = new ListAdapter(dataSet, this);  // give it the dataset and a reference to this fragment
         mRecyclerView.setAdapter(mAdapter);
 
+        // ItemTouchHelper used to manager swipe to remove gestures
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -116,8 +120,7 @@ public class ListFragment extends Fragment {
 
                     @Override
                     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                        //adapter.moveItem(viewHolder.getAdapterPosition(), target.getAdapterPosition());
-                        //return true;
+
                         return false;
                     }
 
@@ -126,8 +129,11 @@ public class ListFragment extends Fragment {
 
                         if (swipeDir == ItemTouchHelper.LEFT | swipeDir == ItemTouchHelper.RIGHT) {
 
+                            // if item is swiped away, remove item and notify adapter
                             dataSet.remove(viewHolder.getAdapterPosition());
                             mAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+
+                            // check if we need to display default button
                             checkEmpty();
                         }
                     }
@@ -140,37 +146,42 @@ public class ListFragment extends Fragment {
                     @Override
                     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                         super.clearView(recyclerView, viewHolder);
-                        viewHolder.itemView.setElevation(0);
-                        isCleared = true;
+                        viewHolder.itemView.setElevation(0);  // set elevation to 0 by default
+                        isCleared = true;  // set clear flag
                     }
 
                     @Override
                     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                        if (isCleared) {
+                        if (isCleared) {  // check if clear flag raised
                             isCleared = false;
                         }
                         else {
-                            viewHolder.itemView.setElevation(10);
+                            viewHolder.itemView.setElevation(10);  // set elevation higher (10) if currently selected
                         }
                         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                     }
                 };
 
+        // attach to recycler view
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
+        // editText at top for entering items
         EditText editText = (EditText) view.findViewById(R.id.editText);
         editText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View view, int keyCode, KeyEvent keyevent) {
 
+                // if enter key pressed
                 if ((keyevent.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
 
+                    // if not empty string
                     if (!editText.getText().toString().matches("")) {
 
+                        // add editText contents as new item in shopping list and notify adapter
                         dataSet.add(editText.getText().toString());
                         mAdapter.notifyItemInserted(dataSet.size() - 1);
                         editText.getText().clear();
-                        checkEmpty();
+                        checkEmpty(); // update visibility of default button
                     }
                     return true;
                 }
@@ -178,28 +189,33 @@ public class ListFragment extends Fragment {
             }
         });
 
+        // mic image/trigger at top of view
         ImageView mic = (ImageView) view.findViewById(R.id.microphone);
         mic.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
 
+                // if clicked call start voice recording process
                 startVoiceRecording();
             }
         });
 
-        FloatingActionButton myFab = (FloatingActionButton) view.findViewById(R.id.fab_add_item);
-        myFab.setOnClickListener(new View.OnClickListener() {
+        // Share FAB
+        FloatingActionButton shareFAB = (FloatingActionButton) view.findViewById(R.id.fab_add_item);
+        shareFAB.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
+                // convert current list to shareable string
                 StringBuilder sb = new StringBuilder();
                 sb.append("Hi!  I'm sharing my Shopping List with you via the ReList App!\n");
 
-                for (int i = 0; i < dataSet.size(); i++) {
+                for (int i = 0; i < dataSet.size(); i++) {  // loop through list; add items as bullets *
                     sb.append("\n");
                     sb.append("* ");
                     sb.append(dataSet.get(i));
                 }
 
+                // start share intent
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, sb.toString());
@@ -208,45 +224,51 @@ public class ListFragment extends Fragment {
             }
         });
 
+        // fill with default list button
         Button setDefault = (Button) view.findViewById(R.id.fill_with_default);
         setDefault.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // get default list, and add all items to empty list
                 dataSet.addAll(Arrays.asList(getDefault()));
-                mAdapter.notifyItemInserted(dataSet.size() - 1);
-                checkEmpty();
+                mAdapter.notifyItemInserted(dataSet.size() - 1);  // notify adapter
+                checkEmpty();  // update visibility of default button
             }
         });
 
         return view;
     }
 
-    private void startVoiceRecording() {
+    private void startVoiceRecording() {  // starts the voice recording intent
+
+        // speech-to-text intent
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
         intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Please Say Item Name\nSeparate individual items with an 'and' in between names");
         try {
-            startActivityForResult(intent, 100);
+            startActivityForResult(intent, 100);  // start
         } catch (ActivityNotFoundException a) {
-
+            // catch
         }
     }
 
-    private void saveListState() {
+    private void saveListState() {  // saves current list state
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 "items", Context.MODE_PRIVATE);
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < dataSet.size(); i++) {
-            sb.append(dataSet.get(i)).append("\n");
-        }
+
+        // create one \n separated string of items
+        for (int i = 0; i < dataSet.size(); i++) sb.append(dataSet.get(i)).append("\n");
+
+        // save
         prefs.edit().putString("items", sb.toString()).apply();
     }
 
-    private void loadListState() {
+    private void loadListState() {  // loads current list
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 "items", Context.MODE_PRIVATE);
@@ -255,12 +277,12 @@ public class ListFragment extends Fragment {
         int lastIndex = 0;
         dataSet.clear();
 
-        for (int i = 0; i < items.length(); i++) {
+        for (int i = 0; i < items.length(); i++) {    // parse string for individual items
 
             if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
         }
 
-        checkEmpty();  //check to see if we display "default" button
+        checkEmpty();  // check to see if we display "default" button
     }
 
     @Override
@@ -268,27 +290,28 @@ public class ListFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case 100: {
+            case 100: {  // case '100' is voice
                 if (resultCode == RESULT_OK && null != data) {
-                    //EditText editText = (EditText) getActivity().findViewById(R.id.editText);
-                    //editText.getText().clear();
-                    //editText.setText(result.get(0));
 
+                    // grab result and store it in ArrayList
                     ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String items = result.get(0);
-                    for (int i = 0; i < items.length(); i++) {
 
+                    String items = result.get(0);  // take the first string representation of user input
+
+                    for (int i = 0; i < items.length(); i++) {  // parse voice input
+
+                        // if we find an 'and', take everything before that and make it an item
                         if (items.length() >= i+5 && items.substring(i, i+5).equals(" and ")) {
 
-                            dataSet.add(items.substring(0, i));
-                            items = items.substring(i+5, items.length());
-                            i = 0;
+                            dataSet.add(items.substring(0, i));  // add item
+                            items = items.substring(i+5, items.length());  // resize string
+                            i = 0;  // reset 'i'
                         }
                     }
 
                     if (items.length() > 0) dataSet.add(items);  // if there was something after the last "and", add it
-                    mAdapter.notifyItemInserted(dataSet.size() - 1);
-                    saveListState();
+                    mAdapter.notifyItemInserted(dataSet.size() - 1);  // notify adapter
+                    saveListState();  // save new state
                 }
                 break;
             }
@@ -317,6 +340,7 @@ public class ListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        // on resume, reload the list
         loadListState();
     }
 
@@ -324,6 +348,7 @@ public class ListFragment extends Fragment {
     public void onPause() {
         super.onPause();
 
+        // on pause, save the list
         saveListState();
     }
 
@@ -348,16 +373,23 @@ public class ListFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    // checks if shopping list is empty, if so then enable default button and images/text prompt
     public void checkEmpty() {
 
         View v = getView();
 
+        // tell user list is empty
         TextView listEmptyText = (TextView) v.findViewById(R.id.list_is_empty_prompt);
+
+        // visual aid
         ImageView receiptImage = (ImageView) v.findViewById(R.id.receipt_background);
+
+        // button to trigger adding default list
         Button fillDefaultButton = (Button) v.findViewById(R.id.fill_with_default);
 
         if (mAdapter.getItemCount() == 0) {
 
+            // enable default button/visual aid
             listEmptyText.setVisibility(View.VISIBLE);
             receiptImage.setVisibility(View.VISIBLE);
             fillDefaultButton.setVisibility(View.VISIBLE);
@@ -365,6 +397,7 @@ public class ListFragment extends Fragment {
             fillDefaultButton.setFocusable(true);
         } else {
 
+            // otherwise don't enable default option
             listEmptyText.setVisibility(View.INVISIBLE);
             receiptImage.setVisibility(View.INVISIBLE);
             fillDefaultButton.setVisibility(View.INVISIBLE);
@@ -373,7 +406,7 @@ public class ListFragment extends Fragment {
         }
     }
 
-    private String[] getDefault() {
+    private String[] getDefault() {  // loads default list as String[]
 
         SharedPreferences prefs = getActivity().getSharedPreferences(
                 "default", Context.MODE_PRIVATE);
@@ -382,11 +415,11 @@ public class ListFragment extends Fragment {
         int lastIndex = 0;
         List<String> dataSet = new ArrayList<String>();
 
-        for (int i = 0; i < items.length(); i++) {
+        for (int i = 0; i < items.length(); i++) {  // parse
 
             if (items.charAt(i) == '\n') { dataSet.add(items.substring(lastIndex, i)); lastIndex = i+1; }
         }
 
-        return dataSet.toArray(new String[dataSet.size()]);
+        return dataSet.toArray(new String[dataSet.size()]);  // save as String[] and return
     }
 }
