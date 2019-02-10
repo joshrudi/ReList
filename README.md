@@ -1,5 +1,7 @@
 # ReList <img src="https://github.com/joshrudi/ReList/blob/master/screenshots/ic_launcher.png" width="100" height="100"> 
-Android Shopping List App. (Work in progress)
+Android Shopping List App.
+
+Report to supervisor: https://github.com/joshrudi/ReList/blob/master/Mobile%20Application%20Development%20Report.pdf
 
 Google Play: https://play.google.com/store/apps/details?id=com.rudi.soft.relist&hl=en
 
